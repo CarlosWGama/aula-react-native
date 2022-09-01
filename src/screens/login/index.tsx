@@ -1,25 +1,34 @@
 
 import { View, Text, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import bg from './../../assets/imgs/bg.png';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { InputRound } from './input';
 import { Button } from '@rneui/base';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import { NavegacaoPrincipalParams } from '../../navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export interface LoginScreenProps {
 }
 
 export function LoginScreen(props: LoginScreenProps) {
 
-    const logar = async ({email, senha}) => {
+    //Navegação
+    type navProps = StackNavigationProp<NavegacaoPrincipalParams, 'login'>
+    const nav = useNavigation<navProps>();
 
+    const [ erro, setErro ] = useState<null|string>(null);
+
+    //Funções
+    const logar = async ({email, senha}) => {
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       if (email.trim() == 'teste@teste.com' && senha == '123456')
-        console.log('Logado com sucesso');
+        nav.navigate('app', {email: 'teste'})
       else
-        console.log('Email ou senha incorreta!');
+        setErro('Email ou senha incorreta!');
     }
 
     return (
@@ -41,6 +50,8 @@ export function LoginScreen(props: LoginScreenProps) {
                         {/* SENHA */}
                         <InputRound placeholder='Digite sua senha' icone='lock' senha  onChangeText={handleChange('senha')} onBlur={handleBlur('senha')}/>
                         {touched.senha && errors.senha && <Text style={styles.error}>{errors.senha}</Text>}
+
+                        {erro && <Text style={styles.erroLogin}>{erro}</Text>}
 
                         {isSubmitting && <ActivityIndicator size="large" color="blue" />}
                         {!isSubmitting && <Button title="Logar" onPress={() => handleSubmit()} containerStyle={styles.btn} />}
@@ -69,6 +80,7 @@ export function LoginScreen(props: LoginScreenProps) {
           alignItems: 'stretch'
       },
       error:{color:'white', fontSize: 15, textAlign:'right', marginBottom: 5, marginTop: -10},
+      erroLogin:{color:'white', fontSize: 20, marginBottom: 5, textAlign:'center'},
       btn: {borderRadius:30, marginTop: 10, marginHorizontal: 10},
       logo: { color: 'white', fontSize: 50, textAlign: 'center'}
 });
