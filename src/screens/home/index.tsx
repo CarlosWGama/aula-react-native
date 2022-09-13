@@ -20,7 +20,7 @@ export function HomeScreen (props: HomeScreenProps) {
     return (
       <View>
          <Text>HomeScreen</Text>
-         <Button title="Voltar" onPress={() => nav.goBack()} />
+         
          <Button title="Tela de Tarefas" onPress={() => nav.navigate("tarefa",{tarefa: {id:1}})} />
       </View>
     );
