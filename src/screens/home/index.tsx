@@ -5,6 +5,7 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { TarefaNavegacaoParams } from '../../navigation/tarefa';
 import { Toolbar } from '../../components/toolbar';
 import { FAB } from '@rneui/base';
+import { ItemTarefa } from './item-tarefa';
 
 export interface HomeScreenProps {
     route: RouteProp<TarefaNavegacaoParams, "home">
@@ -26,6 +27,9 @@ export function HomeScreen (props: HomeScreenProps) {
             color='#2089dc'
             placement='right'
             onPress={() => nav.navigate("tarefa", {})}/>
+
+            <ItemTarefa tarefa={{descricao: 'Teste', data: '01/01/2022'}} onEditar={(tarefa) => nav.navigate('tarefa', {tarefa})} onExcluir={(id) => console.log(id)}/>
+
           
       </View>
     );

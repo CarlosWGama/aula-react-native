@@ -4,7 +4,7 @@ import { TarefaScreen } from '../screens/tarefa';
 
 export type TarefaNavegacaoParams = {
     home: undefined,
-    tarefa: {tarefa: any}
+    tarefa: {tarefa?: any}
 }
 
 const Stack = createStackNavigator<TarefaNavegacaoParams>();
