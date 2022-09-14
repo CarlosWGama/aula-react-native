@@ -4,6 +4,9 @@ import { NavegacaoPrincipal } from './src/navigation';
 
 export default function App() {
   return (
-    <NavegacaoPrincipal />
+    <>
+      <NavegacaoPrincipal />
+      <StatusBar translucent={true} style="light" backgroundColor='transparent' />
+    </>
   );
 }

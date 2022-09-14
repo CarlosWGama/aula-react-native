@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
-import { NavegacaoPrincipalParams } from '../../navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { TarefaNavegacaoParams } from '../../navigation/tarefa';
-import { StackNavigationProp } from '@react-navigation/stack';
-
+import { Toolbar } from '../../components/toolbar';
+import { FAB } from '@rneui/base';
 
 export interface HomeScreenProps {
     route: RouteProp<TarefaNavegacaoParams, "home">
@@ -18,10 +18,15 @@ export function HomeScreen (props: HomeScreenProps) {
 
     ///Renderizando
     return (
-      <View>
-         <Text>HomeScreen</Text>
-         
-         <Button title="Tela de Tarefas" onPress={() => nav.navigate("tarefa",{tarefa: {id:1}})} />
+      <View style={{flex:1}}>
+          <Toolbar titulo="Home" menu />
+          
+          <FAB 
+            icon={{name:'add', color:'white'}}
+            color='#2089dc'
+            placement='right'
+            onPress={() => nav.navigate("tarefa", {})}/>
+          
       </View>
     );
 }
