@@ -1,34 +1,44 @@
 
-import { View, Text, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
 import bg from './../../assets/imgs/bg.png';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { InputRound } from './input';
-import { Button } from '@rneui/base';
+import { Button, Input } from '@rneui/base';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import { NavegacaoPrincipalParams } from '../../navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Modalize } from 'react-native-modalize';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export interface LoginScreenProps {
 }
 
 export function LoginScreen(props: LoginScreenProps) {
 
-    //Navegação
+    //Constantes
     type navProps = StackNavigationProp<NavegacaoPrincipalParams, 'login'>
     const nav = useNavigation<navProps>();
-
+    const modal = useRef<Modalize>();
     const [ erro, setErro ] = useState<null|string>(null);
 
     //Funções
-    const logar = async ({email, senha}) => {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+    const logar = async (dados) => {
+      console.log(dados)  
+      
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
-      if (email.trim() == 'teste@teste.com' && senha == '123456')
-        nav.navigate('app', {email: 'teste'})
+      if (dados.email == "teste@teste.com" && dados.senha == "123456")
+        nav.navigate('app');
       else
-        setErro('Email ou senha incorreta!');
+        ToastAndroid.show("Email ou senha incorreta", 3000);
+      //setErro('Email ou senha incorreto');
+    }
+
+    const cadastrar = async (dados) => {
+      console.log(dados)
+      modal.current?.close();
     }
 
     return (
@@ -56,10 +66,31 @@ export function LoginScreen(props: LoginScreenProps) {
                         {isSubmitting && <ActivityIndicator size="large" color="blue" />}
                         {!isSubmitting && <Button title="Logar" onPress={() => handleSubmit()} containerStyle={styles.btn} />}
 
-                        <Text style={styles.cadastrar}>Não possui conta? Clique aqui para se cadastrar</Text>
+                        <TouchableOpacity onPress={() => modal.current?.open()}>
+                          <Text style={styles.cadastrar}>Não possui conta? Clique aqui para se cadastrar</Text>
+                        </TouchableOpacity>
                     </View>
               )}
           </Formik>
+
+          {/* modalHeight define a altura que o modal abre e modalStyle aplica um estilo ao modal */}
+          <Modalize ref={modal}
+                modalStyle={{padding: 20}}
+                modalHeight={400}  
+            >
+                <Formik
+                    initialValues={{email:'', senha:''}}
+                    onSubmit={cadastrar}
+                >
+                    {({handleChange, handleSubmit}) => (
+                        <>
+                            <Input onChangeText={handleChange('email')} placeholder='Digite seu email' keyboardType='email-address' />
+                            <Input onChangeText={handleChange('senha')} placeholder='Digite sua senha' secureTextEntry />
+                            <Button type='clear' onPress={() => handleSubmit()} title="Cadastrar" />
+                        </>
+                        )}
+                </Formik>
+          </Modalize>
         </ImageBackground>
     );
   }

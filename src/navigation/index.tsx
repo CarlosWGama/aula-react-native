@@ -7,7 +7,7 @@ import { NavegacaoDrawer } from './drawer';
 
 export type NavegacaoPrincipalParams = {
     login: undefined,
-    app: {email:string}
+    app: undefined
 }
 
 const Stack = createStackNavigator<NavegacaoPrincipalParams>();
