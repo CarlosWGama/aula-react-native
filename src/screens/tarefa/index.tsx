@@ -10,6 +10,7 @@ import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Tarefa } from '../../model/tarefa';
 import camera from './../../assets/imgs/camera_on.png';
+import * as ImagePicker from 'expo-image-picker';
 
 export function TarefaScreen (props: any) {
   const route = useRoute();
@@ -22,8 +23,25 @@ export function TarefaScreen (props: any) {
   const titulo = (tarefa.id == null ? 'Cadastrar ' : 'Editar ') + "Tarefa"; 
 
   //Tirar foto
-  const abrirCamera = async () => {
+  const abrirCamera = async (setFieldValue) => {
     console.log('Abrir camera')
+    
+    const permissao = await ImagePicker.requestCameraPermissionsAsync();
+    console.log(permissao)
+    if (permissao.granted) {
+      let foto =  await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        base64: true,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.3
+      })
+
+      if (!foto.cancelled) 
+        setFieldValue("imagem", 'data:image/jpeg;base64,'+foto.base64)
+      
+    }
+  
+    
   }
   
   //Salvar
@@ -82,8 +100,8 @@ export function TarefaScreen (props: any) {
                 
                 {/* IMAGEM/FOTO */}
                 <View style={{alignItems:'center'}}>
-                  <TouchableOpacity onPress={abrirCamera}>
-                    <Image source={camera} style={[styles.img]}/>
+                  <TouchableOpacity onPress={() => abrirCamera(setFieldValue)}>
+                    <Image source={values.imagem ? {uri:values.imagem} : camera} style={[styles.img]}/>
                   </TouchableOpacity>
                 </View>
 

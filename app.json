@@ -28,6 +28,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "O aplicativo irá acessar suas fotos para que você possa anexá-las em uma tarefa"
+          }
+        ]
+    ]
   }
 }
