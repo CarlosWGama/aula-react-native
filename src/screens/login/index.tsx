@@ -11,6 +11,8 @@ import { NavegacaoPrincipalParams } from '../../navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import api from '../../providers/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface LoginScreenProps {
 }
@@ -27,17 +29,23 @@ export function LoginScreen(props: LoginScreenProps) {
     const logar = async (dados) => {
       console.log(dados)  
       
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      if (dados.email == "teste@teste.com" && dados.senha == "123456")
-        nav.navigate('app');
-      else
-        ToastAndroid.show("Email ou senha incorreta", 3000);
-      //setErro('Email ou senha incorreto');
+      await api.post('/login', dados)
+            .then(response => {
+                AsyncStorage.setItem('jwt', response.data.jwt);
+                nav.navigate('app')
+            })
+            .catch(() => ToastAndroid.show("Email ou senha incorreta", 3000));
     }
 
-    const cadastrar = async (dados) => {
-      console.log(dados)
+    const cadastrar = async (usuario) => {
+      console.log(usuario)
+      
+      await api.post('/usuarios', {usuario})
+      //retornou código de sucesso 201
+      .then(() => ToastAndroid.show('Cadastrado com sucesso', ToastAndroid.LONG))
+      //retornou código de erro 30x/40x/50x
+      .catch(() => ToastAndroid.show('Falha ao cadastrar usuário', ToastAndroid.LONG));
+
       modal.current?.close();
     }
 
@@ -85,6 +93,7 @@ export function LoginScreen(props: LoginScreenProps) {
                     {({handleChange, handleSubmit}) => (
                         <>
                             <Input onChangeText={handleChange('email')} placeholder='Digite seu email' keyboardType='email-address' />
+                            <Input onChangeText={handleChange('nome')} placeholder='Digite seu nome'  />
                             <Input onChangeText={handleChange('senha')} placeholder='Digite sua senha' secureTextEntry />
                             <Button type='clear' onPress={() => handleSubmit()} title="Cadastrar" />
                         </>

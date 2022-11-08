@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Button, FlatList, Alert } from 'react-native';
+import { View, Text, Button, FlatList, Alert, ToastAndroid } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { TarefaNavegacaoParams } from '../../navigation/tarefa';
@@ -7,6 +7,7 @@ import { Toolbar } from '../../components/toolbar';
 import { FAB } from '@rneui/base';
 import { ItemTarefa } from './item-tarefa';
 import { Tarefa } from '../../model/tarefa';
+import api from '../../providers/api';
 
 export interface HomeScreenProps {
     route: RouteProp<TarefaNavegacaoParams, "home">
@@ -25,15 +26,25 @@ export function HomeScreen (props: HomeScreenProps) {
       {id: "4", descricao: "Tarefa 4", data: "01/01/2022"},
     ])
 
+    //Funções
+    React.useEffect(() => {
+        //Adiciona o listener uam unica vez ao carregar a tela
+        nav.addListener('focus', () => {
+            api.get('/tarefas').then(response => setTarefas(response.data))
+        });
+    }, [])
+
 
     //Funções
     const excluir = (id:any) => {
-        Alert.alert("Excluir Tarefa", "Deseja realmente excluir essa tarefa?", [
-           {text: 'Sim', onPress: () => {
-              console.log('Excluindo item');
-           }},
-           {text: 'Não'}
-        ])
+      Alert.alert("Excluir Tarefa", "Deseja realmente excluir essa tarefa?", [
+         {text: 'Sim', onPress: async () => {
+              await api.delete(`/tarefas/${id}`)
+              await api.get('/tarefas').then(response => setTarefas(response.data))
+              ToastAndroid.show('Tarefa excluida', ToastAndroid.LONG)
+         }},
+         {text: 'Não'}
+      ])
     }
 
 

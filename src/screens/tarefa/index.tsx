@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Image, Button, StyleSheet, Platform } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, Platform, ToastAndroid } from 'react-native';
 import { Toolbar } from '../../components/toolbar';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,6 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Tarefa } from '../../model/tarefa';
 import camera from './../../assets/imgs/camera_on.png';
 import * as ImagePicker from 'expo-image-picker';
+import api from '../../providers/api';
 
 export function TarefaScreen (props: any) {
   const route = useRoute();
@@ -47,6 +48,18 @@ export function TarefaScreen (props: any) {
   //Salvar
   const salvar = async (dados) => {
     console.log(dados);
+    try {
+      if (!tarefa.id) //Cadastrar
+        await api.post('/tarefas', {tarefa})
+      else //Atualiza
+        await api.put(`/tarefas/${tarefa.id}`, {tarefa})
+
+      ToastAndroid.show('Ação realizada com sucesso', ToastAndroid.LONG);
+      nav.goBack();
+      
+    } catch (e) {
+      ToastAndroid.show('Falha ao realizar a ação', ToastAndroid.LONG);
+    }
   }
 
   
