@@ -4,6 +4,7 @@ import { TarefaNavegacao } from './tarefa';
 import { View, Text } from 'react-native';
 import { Button } from '@rneui/base';
 import { NavegacaoConfiguracao } from './configuracoes';
+import { getAuth } from 'firebase/auth';
 
 const Drawer = createDrawerNavigator();
 
@@ -12,7 +13,11 @@ export const NavegacaoDrawer = () => (
         <View>
             <Text style={{paddingLeft: 10, paddingTop: 20}}>Bem Vindo</Text>
             <DrawerItemList {...props}/>
-            <Button type="clear" title="Sair"  onPress={() => props.navigation.navigate('login')} />
+            <Button type="clear" title="Sair"  onPress={() => {
+               const auth = getAuth();
+               auth.signOut(); 
+               props.navigation.navigate('login')
+            }} />
         </View>
     )}>
         <Drawer.Screen name="tarefas" component={TarefaNavegacao} options={{drawerLabel:"Tarefas", drawerIcon: () => <MaterialIcons name="done" /> }} />

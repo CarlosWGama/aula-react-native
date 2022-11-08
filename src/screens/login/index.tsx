@@ -11,6 +11,7 @@ import { NavegacaoPrincipalParams } from '../../navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 export interface LoginScreenProps {
 }
@@ -22,22 +23,21 @@ export function LoginScreen(props: LoginScreenProps) {
     const nav = useNavigation<navProps>();
     const modal = useRef<Modalize>();
     const [ erro, setErro ] = useState<null|string>(null);
+    const auth = getAuth(); 
 
     //Funções
     const logar = async (dados) => {
-      console.log(dados)  
-      
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      if (dados.email == "teste@teste.com" && dados.senha == "123456")
-        nav.navigate('app');
-      else
-        ToastAndroid.show("Email ou senha incorreta", 3000);
-      //setErro('Email ou senha incorreto');
+      await signInWithEmailAndPassword(auth, dados.email, dados.senha)
+            .then(() => nav.navigate('app'))
+            .catch(() => ToastAndroid.show("Email ou senha incorreta", 3000))
     }
 
     const cadastrar = async (dados) => {
       console.log(dados)
+      await createUserWithEmailAndPassword(auth, dados.email, dados.senha)
+            .then(usuario => ToastAndroid.show('Usuário criado com sucesso', ToastAndroid.LONG))
+            .catch(error => ToastAndroid.show('Falha ao criar usuário', ToastAndroid.LONG))
+
       modal.current?.close();
     }
 
