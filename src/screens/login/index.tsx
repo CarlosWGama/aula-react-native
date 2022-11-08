@@ -13,6 +13,7 @@ import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import api from '../../providers/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAutenticacaoContext } from '../../providers/autenticacao';
 
 export interface LoginScreenProps {
 }
@@ -24,6 +25,7 @@ export function LoginScreen(props: LoginScreenProps) {
     const nav = useNavigation<navProps>();
     const modal = useRef<Modalize>();
     const [ erro, setErro ] = useState<null|string>(null);
+    const { setUsuario } = useAutenticacaoContext();
 
     //Funções
     const logar = async (dados) => {
@@ -31,6 +33,7 @@ export function LoginScreen(props: LoginScreenProps) {
       
       await api.post('/login', dados)
             .then(response => {
+                setUsuario(dados.email);
                 AsyncStorage.setItem('jwt', response.data.jwt);
                 nav.navigate('app')
             })
