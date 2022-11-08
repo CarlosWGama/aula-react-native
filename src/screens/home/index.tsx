@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Button, FlatList, Alert } from 'react-native';
+import { View, Text, Button, FlatList, Alert, LogBox } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { TarefaNavegacaoParams } from '../../navigation/tarefa';
@@ -7,6 +7,8 @@ import { Toolbar } from '../../components/toolbar';
 import { FAB } from '@rneui/base';
 import { ItemTarefa } from './item-tarefa';
 import { Tarefa } from '../../model/tarefa';
+import { getFirestore, where, collection, deleteDoc, query, getDocs, doc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export interface HomeScreenProps {
     route: RouteProp<TarefaNavegacaoParams, "home">
@@ -17,20 +19,43 @@ export function HomeScreen (props: HomeScreenProps) {
     //Constantes
     type navProp = StackNavigationProp<TarefaNavegacaoParams, 'home'>;
     const nav = useNavigation<navProp>();
+    const [ tarefas, setTarefas ] = React.useState<Tarefa[]>([])
+    const auth = getAuth();
+    const db = getFirestore();
 
-    const [ tarefas, setTarefas ] = React.useState<Tarefa[]>([
-      {id: "1", descricao: "Tarefa 1", data: "01/01/2019"},
-      {id: "2", descricao: "Tarefa 2", data: "01/01/2020"},
-      {id: "3", descricao: "Tarefa 3", data: "01/01/2021"},
-      {id: "4", descricao: "Tarefa 4", data: "01/01/2022"},
-    ])
+    React.useEffect(() => {
+        LogBox.ignoreLogs(['Setting a timer'])
+        nav.addListener('focus', () => {
+            const q = query(collection(db, 'tarefas'), where('usuarioID', '==', auth.currentUser?.uid));
 
+            getDocs(q)
+                .then(snapshots => {
+                    const resultados: any[] = []
+                    snapshots.forEach(snapshot => {
+                        resultados.push(snapshot.data());
+                    })
+                    setTarefas(resultados);
+                })
+        })
+    }, [])
 
     //Funções
     const excluir = (id:any) => {
         Alert.alert("Excluir Tarefa", "Deseja realmente excluir essa tarefa?", [
-           {text: 'Sim', onPress: () => {
+           {text: 'Sim', onPress: async () => {
               console.log('Excluindo item');
+
+              await deleteDoc(doc(db, 'tarefas', id));
+
+              const q = query(collection(db, 'tarefas'), where('usuarioID', '==', auth.currentUser?.uid));
+              getDocs(q)
+                .then(snapshots => {
+                    const resultados: any[] = []
+                    snapshots.forEach(snapshot => {
+                        resultados.push(snapshot.data());
+                    })
+                    setTarefas(resultados);
+              })
            }},
            {text: 'Não'}
         ])

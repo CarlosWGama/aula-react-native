@@ -12,6 +12,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Modalize } from 'react-native-modalize';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { 
+    AppOpenAd, //Propaganda do modo Abertura do App
+    InterstitialAd, //Propaganda do modo InterstitialAd
+    RewardedAd,  //Propaganda do modo Rewarded
+    BannerAd, BannerAdSize,  //Os Banners
+    TestIds  //Os ID de Propagandas para teste
+} from 'react-native-google-mobile-ads';
+
 
 export interface LoginScreenProps {
 }
@@ -41,6 +49,16 @@ export function LoginScreen(props: LoginScreenProps) {
       modal.current?.close();
     }
 
+    //Propaganda
+    const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
+    interstitial.load();
+
+    const openApp = AppOpenAd.createForAdRequest(TestIds.APP_OPEN);
+    openApp.load();
+
+    const reward = RewardedAd.createForAdRequest(TestIds.REWARDED);
+    reward.load();
+
     return (
         <ImageBackground source={bg} style={styles.background}>
           <Formik 
@@ -69,9 +87,17 @@ export function LoginScreen(props: LoginScreenProps) {
                         <TouchableOpacity onPress={() => modal.current?.open()}>
                           <Text style={styles.cadastrar}>Não possui conta? Clique aqui para se cadastrar</Text>
                         </TouchableOpacity>
+
+
+                        <Button title="Teste Admob" onPress={() => {
+                          reward.show();
+                        }} />
+
                     </View>
               )}
           </Formik>
+          <BannerAd unitId={TestIds.BANNER} size={BannerAdSize.FULL_BANNER}/> 
+
 
           {/* modalHeight define a altura que o modal abre e modalStyle aplica um estilo ao modal */}
           <Modalize ref={modal}

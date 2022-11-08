@@ -18,24 +18,39 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.carloswgama.aula"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.carloswgama.aula"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-        [
-          "expo-image-picker",
-          {
-            "photosPermission": "O aplicativo irá acessar suas fotos para que você possa anexá-las em uma tarefa"
-          }
-        ]
-    ]
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo irá acessar suas fotos para que você possa anexá-las em uma tarefa"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d63ef8ab-0bb9-42fb-8abb-be4e7f901c79"
+      }
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-8890411738087560~2023466954",
+    "ios_app_id": "ca-app-pub-8890411738087560~2023466954"
   }
 }

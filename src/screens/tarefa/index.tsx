@@ -11,11 +11,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Tarefa } from '../../model/tarefa';
 import camera from './../../assets/imgs/camera_on.png';
 import * as ImagePicker from 'expo-image-picker';
+import { collection, doc, getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export function TarefaScreen (props: any) {
   const route = useRoute();
   const [exibirCalendario, setExibirCalendario] = React.useState(false);
   const nav = useNavigation();
+  const auth = getAuth();
+  const db = getFirestore();
   
   //recupera a tarefa passada ou inicializa
   //@ts-ignore
@@ -45,9 +49,22 @@ export function TarefaScreen (props: any) {
   }
   
   //Salvar
-  const salvar = async (dados) => {
-    console.log(dados);
+  const salvar = async (tarefa:Tarefa) => {
+    
+    if (!tarefa.id) {
+      tarefa.id = doc(collection(db, 'tarefas')).id
+      tarefa.usuarioID = auth.currentUser?.uid;
+    }
+
+    //@ts-ignore
+    setDoc(doc(db, "tarefas", tarefa.id), tarefa)
+      .then(() => {
+        ToastAndroid.show('Tarefa cadastrada com sucesso', ToastAndroid.LONG);
+        nav.goBack();
+      })
+      .catch(() => ToastAndroid.show('Não foi possível completar a ação', ToastAndroid.LONG));
   }
+
 
   
   return (
